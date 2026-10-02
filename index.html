@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 01 · Intro to Visuals in AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,72,400;0,72,500;0,72,600;1,72,500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  /* ============ TOKENS ============ */
+  :root{
+    --bg: #E6E8DF;
+    --paper: #FFFFFF;
+    --ink: #10151D;
+    --ink-soft: #414B58;
+    --ink-faint: #6E7783;
+    --dark: #10151D;
+    --dark-text: #F4F5F0;
+    --dark-faint: #9AA3AE;
+    --line: rgba(16,21,29,0.18);
+    --grid: rgba(16,21,29,0.06);
+
+    --amber: #B45309;
+    --amber-bg: #FDE8CF;
+    --teal: #0F766E;
+    --teal-bg: #CDEEE8;
+    --violet: #6D28D9;
+    --violet-bg: #E7DCFB;
+    --rose: #BE123C;
+    --rose-bg: #FBDCE4;
+
+    --radius: 3px;
+    --maxw: 880px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    html{ scroll-behavior: auto; }
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background:
+      repeating-linear-gradient(0deg, var(--grid) 0px, var(--grid) 1px, transparent 1px, transparent 28px),
+      repeating-linear-gradient(90deg, var(--grid) 0px, var(--grid) 1px, transparent 1px, transparent 28px),
+      var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{ font-family:"Newsreader", serif; font-weight: 600; margin: 0; }
+  .mono{ font-family:"IBM Plex Mono", monospace; }
+  a{ color: var(--teal); text-decoration-thickness: 1.5px; }
+  a:hover{ color: var(--ink); }
+  ::selection{ background: var(--amber-bg); }
+  button{ font-family: "IBM Plex Mono", monospace; }
+
+  /* ============ PROGRESS + COVERAGE ============ */
+  #progress-track{
+    position: fixed; top:0; left:0; width:100%; height:5px;
+    background: rgba(16,21,29,0.15); z-index: 60;
+  }
+  #progress-fill{
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--amber), var(--teal), var(--violet));
+    transition: width 0.15s linear;
+  }
+  #coverage-pill{
+    position: fixed; bottom: 18px; right: 18px; z-index: 60;
+    background: var(--dark); color: var(--dark-text);
+    font-family:"IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.03em;
+    padding: 10px 15px; border-radius: 999px;
+    display:flex; align-items:center; gap:8px;
+    box-shadow: 0 6px 20px rgba(16,21,29,0.35);
+  }
+  #coverage-pill .dot{
+    width:8px; height:8px; border-radius:50%; background: var(--amber);
+    box-shadow: 0 0 0 3px rgba(180,83,9,0.35);
+  }
+  #coverage-pill.full .dot{ background: #34D399; box-shadow: 0 0 0 3px rgba(52,211,153,0.35); }
+  #badge-toast{
+    position: fixed; bottom: 62px; right: 18px; z-index: 61;
+    background: var(--paper); border: 1.5px solid var(--ink);
+    padding: 12px 16px; border-radius: var(--radius);
+    max-width: 250px; font-size: 13px; color: var(--ink-soft);
+    box-shadow: 0 10px 30px rgba(16,21,29,0.25);
+    opacity: 0; transform: translateY(8px); pointer-events:none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  #badge-toast.show{ opacity:1; transform: translateY(0); }
+  #badge-toast strong{ color: var(--ink); display:block; margin-bottom:2px; }
+
+  /* ============ LAYOUT ============ */
+  .wrap{ max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+  section{ padding: 68px 0; }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ink-faint); margin-bottom: 14px;
+    display:flex; align-items:center; gap:10px; font-weight: 600;
+  }
+  .eyebrow::before{ content:""; width:20px; height:2px; background: var(--amber); display:inline-block; }
+  .reveal{ opacity:0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in{ opacity:1; transform: translateY(0); }
+
+  /* ============ HERO ============ */
+  #hero{ background: var(--dark); color: var(--dark-text); padding: 96px 0 72px; }
+  #hero .eyebrow{ color: var(--dark-faint); }
+  #hero h1{ font-size: clamp(34px, 5.4vw, 52px); line-height: 1.1; max-width: 15ch; color: var(--dark-text); }
+  #hero .lede{ font-size: 17px; color: var(--dark-faint); max-width: 62ch; margin-top: 18px; }
+  .obj-list{ list-style:none; margin: 30px 0 0; padding:0; display:grid; gap:10px; }
+  .obj-list li{ display:flex; gap:12px; align-items:baseline; font-size: 14.5px; color: var(--dark-faint); }
+  .obj-list .n{ font-family:"IBM Plex Mono", monospace; color: #F5A623; font-size: 12px; flex-shrink:0; width: 20px; }
+  .hint{
+    margin-top: 32px; font-size: 13.5px; color: var(--dark-text);
+    border: 1px dashed rgba(244,245,240,0.4); border-radius: var(--radius);
+    padding: 12px 16px; max-width: 62ch; background: rgba(244,245,240,0.06);
+  }
+  .hint .k{ font-family:"IBM Plex Mono", monospace; font-size: 11.5px; color:#F5A623; letter-spacing: 0.08em; }
+
+  /* ============ SECTION HEADERS ============ */
+  .sec-head{ max-width: 64ch; margin-bottom: 34px; }
+  .sec-head h2{ font-size: clamp(25px, 3.6vw, 34px); margin-top:6px; color: var(--ink); }
+  .sec-head p{ color: var(--ink-soft); margin-top: 12px; font-size: 15px; }
+
+  /* ============ FLIP CARD BASE ============ */
+  .flip-card{ perspective: 1100px; cursor: pointer; position: relative; }
+  .flip-card:focus-visible{ outline: 3px solid var(--amber); outline-offset: 3px; border-radius: var(--radius); }
+  .flip-inner{
+    position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(.4,.1,.2,1);
+  }
+  .flip-card.flipped .flip-inner{ transform: rotateY(180deg); }
+  .flip-card.flip-x.flipped .flip-inner{ transform: rotateX(180deg); }
+  .face{
+    position: absolute; inset: 0;
+    -webkit-backface-visibility: hidden; backface-visibility: hidden;
+    border: 1.5px solid var(--line); border-radius: var(--radius);
+    background: var(--paper); overflow: hidden;
+  }
+  .flip-card .face.back{ transform: rotateY(180deg); }
+  .flip-card.flip-x .face.back{ transform: rotateX(180deg); }
+  .seen-check{
+    position: absolute; top: 7px; right: 9px;
+    font-family: "IBM Plex Mono", monospace; font-size: 11px; font-weight: 600;
+    color: var(--teal); opacity: 0; transition: opacity 0.3s ease;
+  }
+  .flip-card[data-seen="1"] .seen-check{ opacity: 1; }
+
+  /* ============ GLOSSARY (flip on Y axis) ============ */
+  .legend{ display:flex; flex-wrap:wrap; gap: 16px; margin: 20px 0 28px; font-size: 12.5px; color: var(--ink-soft); font-weight: 500; }
+  .legend span{ display:inline-flex; align-items:center; gap:7px; }
+  .legend .sw{ width:10px; height:10px; border-radius:2px; display:inline-block; }
+
+  .glossary-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 720px){ .glossary-grid{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 480px){ .glossary-grid{ grid-template-columns: 1fr; } }
+
+  .term-card{ height: 148px; }
+  .term-card .face{ display: flex; flex-direction: column; padding: 14px; }
+  .term-card[data-cat="data"] .face{ border-left: 5px solid var(--amber); }
+  .term-card[data-cat="model"] .face{ border-left: 5px solid var(--teal); }
+  .term-card[data-cat="train"] .face{ border-left: 5px solid var(--violet); }
+  .term-card[data-cat="safety"] .face{ border-left: 5px solid var(--rose); }
+  .term-card .cat-label{
+    font-family:"IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.1em; font-weight: 600;
+  }
+  .term-card[data-cat="data"] .cat-label{ color: var(--amber); }
+  .term-card[data-cat="model"] .cat-label{ color: var(--teal); }
+  .term-card[data-cat="train"] .cat-label{ color: var(--violet); }
+  .term-card[data-cat="safety"] .cat-label{ color: var(--rose); }
+  .term-card .term-name{
+    font-family:"Newsreader", serif; font-size: 19px; font-weight: 600; color: var(--ink);
+    margin-top: auto; line-height: 1.2;
+  }
+  .term-card .flip-hint{
+    font-family:"IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.1em;
+    color: var(--ink-faint); margin-top: 8px;
+  }
+  .term-card .face.back{ justify-content: flex-start; }
+  .term-card .def{ font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); margin-top: 6px; overflow-y: auto; }
+
+  /* ============ TIMELINE (flip on X axis) ============ */
+  .timeline{ position: relative; margin-top: 10px; padding-left: 26px; }
+  .timeline::before{
+    content:""; position:absolute; left:5px; top:6px; bottom:6px; width:2px; background: var(--line);
+  }
+  .t-item{ position: relative; margin-bottom: 14px; }
+  .t-item .dot{
+    position:absolute; left: -26px; top: 24px; width:12px; height:12px; border-radius:50%;
+    background: var(--paper); border: 2.5px solid var(--ink-faint); z-index: 2;
+  }
+  .t-item[data-cat="data"] .dot{ border-color: var(--amber); }
+  .t-item[data-cat="model"] .dot{ border-color: var(--teal); }
+  .t-item[data-cat="train"] .dot{ border-color: var(--violet); }
+  .t-item[data-seen="1"][data-cat="data"] .dot{ background: var(--amber); }
+  .t-item[data-seen="1"][data-cat="model"] .dot{ background: var(--teal); }
+  .t-item[data-seen="1"][data-cat="train"] .dot{ background: var(--violet); }
+
+  .event-card{ height: 158px; }
+  @media (max-width: 700px){ .event-card{ height: 218px; } }
+  @media (max-width: 440px){ .event-card{ height: 262px; } }
+  .event-card .face{ padding: 16px 18px; display:flex; flex-direction: column; }
+  .event-card .face.front{ justify-content: center; }
+  .event-card .yr{
+    font-family:"IBM Plex Mono", monospace; font-size: 12.5px; font-weight: 600;
+  }
+  .event-card[data-cat="data"] .yr{ color: var(--amber); }
+  .event-card[data-cat="model"] .yr{ color: var(--teal); }
+  .event-card[data-cat="train"] .yr{ color: var(--violet); }
+  .event-card .ttl{
+    font-family:"Newsreader", serif; font-size: 21px; font-weight: 600; color: var(--ink);
+    line-height: 1.2; margin-top: 6px;
+  }
+  .event-card .flip-hint{
+    font-family:"IBM Plex Mono", monospace; font-size: 9.5px; letter-spacing: 0.1em;
+    color: var(--ink-faint); margin-top: 10px;
+  }
+  .event-card .face.back{ justify-content: center; }
+  .event-card .body{ font-size: 13px; line-height: 1.55; color: var(--ink-soft); overflow-y: auto; }
+  .event-card .src{ display:block; margin-top: 7px; font-size: 11.5px; }
+
+  /* ============ PIPELINE (drag the photo) ============ */
+  #lifecycle{ background: var(--paper); border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+  .pipeline{
+    display: grid; grid-template-columns: 120px 1fr; gap: 18px; margin-top: 8px;
+    position: relative;
+  }
+  @media (max-width: 560px){ .pipeline{ grid-template-columns: 76px 1fr; gap: 10px; } }
+  .path-col{ position: relative; touch-action: none; }
+  .path-col svg{ display:block; width: 100%; height: 100%; overflow: visible; }
+  .path-col .track{ stroke: var(--line); stroke-width: 3; fill: none; }
+  .path-col .trail{ stroke: var(--amber); stroke-width: 3; fill: none; }
+  .anchor-dot{ fill: var(--paper); stroke: var(--ink-faint); stroke-width: 2.5; }
+  .anchor-dot.lit{ fill: var(--amber); stroke: var(--amber); }
+
+  #photo-chip{
+    position:absolute; left:0; top:0; width: 34px; height: 34px;
+    background: var(--paper); border: 2.5px solid var(--ink); border-radius: 4px;
+    box-shadow: 0 5px 14px rgba(16,21,29,0.35);
+    cursor: grab; touch-action: none; padding: 3px;
+    transform: translate(-9999px,-9999px);
+    z-index: 5;
+  }
+  #photo-chip:active{ cursor: grabbing; }
+  #photo-chip:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  #photo-chip .thumb{
+    width: 100%; height: 100%;
+    background: linear-gradient(180deg, #BFD8E8 0%, #BFD8E8 55%, #9DBB8F 55%, #9DBB8F 100%);
+    border-radius: 2px; position: relative; overflow:hidden;
+  }
+  #photo-chip .thumb::after{
+    content:""; position:absolute; top: 4px; right: 5px; width: 7px; height: 7px;
+    border-radius: 50%; background: #F5D06F;
+  }
+  #photo-chip.pulse{ animation: chip-pulse 1.6s ease-in-out infinite; }
+  @keyframes chip-pulse{ 0%,100%{ box-shadow: 0 5px 14px rgba(16,21,29,0.35);} 50%{ box-shadow: 0 0 0 8px rgba(180,83,9,0.25);} }
+
+  .stage-col{ display: flex; flex-direction: column; gap: 12px; }
+  .stage{ position: relative; }
+  .stage .stage-inner{
+    border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--paper);
+    transition: opacity 0.35s ease, filter 0.35s ease;
+  }
+  .stage.locked .stage-inner{ opacity: 0.35; filter: grayscale(1); pointer-events: none; }
+  .stage.locked .lock-tag{ display: inline-flex; }
+  .lock-tag{
+    display: none; position:absolute; top: -9px; right: 10px;
+    font-family: "IBM Plex Mono", monospace; font-size: 10px; letter-spacing: 0.08em;
+    background: var(--ink); color: var(--dark-text); padding: 2px 8px; border-radius: 999px;
+    align-items: center; gap: 4px; z-index: 2;
+  }
+  .stage.just-unlocked .stage-inner{ animation: unlock-pop 0.45s ease; }
+  @keyframes unlock-pop{ 0%{ transform: scale(0.97);} 60%{ transform: scale(1.015);} 100%{ transform: scale(1);} }
+
+  details.stage-card summary{ list-style:none; cursor:pointer; padding: 13px 15px; display:flex; justify-content:space-between; gap:10px; }
+  details.stage-card summary::-webkit-details-marker{ display:none; }
+  details.stage-card .ttl{ font-weight:600; font-size:14.5px; color: var(--ink); display:flex; gap:10px; align-items:baseline; }
+  details.stage-card .snum{ font-family:"IBM Plex Mono", monospace; font-size: 11.5px; font-weight:600; }
+  .stage[data-cat="data"] .snum{ color: var(--amber); }
+  .stage[data-cat="model"] .snum{ color: var(--teal); }
+  .stage[data-cat="train"] .snum{ color: var(--violet); }
+  .stage[data-cat="loop"] .snum{ color: var(--rose); }
+  details.stage-card .tag{ font-family:"IBM Plex Mono", monospace; font-size: 10.5px; color: var(--ink-faint); align-self:center; white-space:nowrap; }
+  details.stage-card summary::after{ content:"+"; color: var(--ink-faint); font-family:"IBM Plex Mono", monospace; }
+  details.stage-card[open] summary::after{ content:"–"; }
+  details.stage-card .body{ padding: 0 15px 14px; font-size: 13.5px; color: var(--ink-soft); }
+  details.stage-card .src{ display:block; margin-top:8px; font-size:12px; }
+
+  .pipe-controls{ margin-top: 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  #advance-btn{
+    background: var(--ink); color: var(--dark-text); border: none; cursor: pointer;
+    font-size: 12.5px; padding: 10px 16px; border-radius: var(--radius); letter-spacing: 0.03em;
+  }
+  #advance-btn:hover{ background: #2A3341; }
+  #advance-btn:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  #pipe-status{ font-family:"IBM Plex Mono", monospace; font-size: 12px; color: var(--ink-soft); }
+
+  .loopback{ margin-top: 16px; padding: 14px 16px; border: 1.5px dashed var(--rose); border-radius: var(--radius);
+    background: var(--rose-bg); font-size: 13px; color: #8C1030; display:flex; gap:10px; align-items:flex-start; }
+  .loopback svg{ flex-shrink:0; margin-top:2px; }
+  .loopback .dash{ stroke-dasharray: 4 4; animation: dashmove 1.2s linear infinite; }
+  @keyframes dashmove{ to{ stroke-dashoffset: -16; } }
+
+  /* ============ KNOWLEDGE CHECK: SORT ============ */
+  .kc-tray{
+    border: 1.5px dashed var(--ink); border-radius: var(--radius); background: var(--paper);
+    padding: 14px; display:flex; flex-wrap: wrap; gap: 8px; min-height: 58px; margin-bottom: 18px;
+  }
+  .kc-tray-label{ font-family:"IBM Plex Mono", monospace; font-size: 11px; letter-spacing:0.1em; color: var(--ink-faint); width:100%; margin-bottom: 2px; }
+  .kc-chip{
+    font-family:"IBM Plex Mono", monospace; font-size: 12.5px; font-weight: 600;
+    background: var(--paper); color: var(--ink);
+    border: 2px solid var(--ink); border-radius: 999px; padding: 6px 13px; cursor: pointer;
+    transition: transform 0.12s ease, background 0.12s ease;
+    user-select: none;
+  }
+  .kc-chip:hover{ transform: translateY(-1px); }
+  .kc-chip:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  .kc-chip.selected{ background: var(--ink); color: var(--dark-text); }
+  .kc-chip.correct{ border-color: var(--teal); background: var(--teal-bg); color: #0B4F4A; cursor: default; }
+  .kc-chip.correct::after{ content:" ✓"; }
+  .kc-chip.wrong{ animation: shake 0.4s ease; border-color: var(--rose); background: var(--rose-bg); color: #8C1030; }
+  @keyframes shake{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+
+  .kc-bins{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  @media (max-width: 780px){ .kc-bins{ grid-template-columns: repeat(2,1fr); } }
+  @media (max-width: 440px){ .kc-bins{ grid-template-columns: 1fr; } }
+  .kc-bin{
+    border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--paper);
+    min-height: 150px; display:flex; flex-direction: column; cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .kc-bin.receiving{ border-color: var(--ink); box-shadow: 0 0 0 3px rgba(180,83,9,0.25); }
+  .kc-bin h3{
+    font-family:"IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: 0.06em;
+    font-weight: 600; padding: 10px 12px; border-bottom: 1.5px solid var(--line);
+    color: var(--dark-text); border-radius: 2px 2px 0 0;
+  }
+  .kc-bin[data-phase="A"] h3{ background: var(--amber); }
+  .kc-bin[data-phase="B"] h3{ background: #92400E; }
+  .kc-bin[data-phase="C"] h3{ background: var(--teal); }
+  .kc-bin[data-phase="D"] h3{ background: var(--violet); }
+  .kc-bin .kc-drop{ padding: 10px; display:flex; flex-wrap:wrap; gap:6px; align-content: flex-start; flex: 1; }
+  .kc-bin .kc-sub{ font-size: 10.5px; color: var(--ink-faint); font-family:"IBM Plex Mono", monospace; padding: 0 12px 8px; }
+
+  .kc-controls{ margin-top: 18px; display:flex; gap: 12px; align-items:center; flex-wrap:wrap; }
+  .kc-btn{
+    border: 2px solid var(--ink); border-radius: var(--radius); cursor:pointer;
+    font-size: 12.5px; padding: 10px 18px; letter-spacing: 0.03em;
+  }
+  .kc-btn.primary{ background: var(--ink); color: var(--dark-text); }
+  .kc-btn.primary:hover{ background: #2A3341; }
+  .kc-btn.primary:disabled{ opacity: 0.4; cursor: not-allowed; }
+  .kc-btn.ghost{ background: var(--paper); color: var(--ink); }
+  .kc-btn:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  #kc-feedback{ font-size: 13.5px; font-weight: 600; }
+  #kc-feedback.ok{ color: var(--teal); }
+  #kc-feedback.partial{ color: var(--amber); }
+  #kc-feedback.err{ color: var(--rose); }
+
+  /* ============ QUICK QUESTIONS + ORDER GAME ============ */
+  .qq-block{
+    border: 1.5px solid var(--line); border-left: 5px solid var(--violet);
+    border-radius: var(--radius); background: var(--paper);
+    padding: 18px; margin-bottom: 14px;
+  }
+  .qq-block .qq-q{ font-weight: 600; font-size: 14.5px; color: var(--ink); margin-bottom: 12px; }
+  .qq-block .qq-num{ font-family:"IBM Plex Mono", monospace; font-size: 11px; color: var(--violet); font-weight:600; letter-spacing: 0.08em; display:block; margin-bottom: 6px; }
+  .qq-opts{ display:flex; flex-direction: column; gap: 8px; }
+  .qq-opt{
+    text-align: left; font-family: "IBM Plex Sans", sans-serif; font-size: 13.5px;
+    border: 1.5px solid var(--line); border-radius: var(--radius); background: var(--paper);
+    padding: 10px 13px; cursor: pointer; color: var(--ink); transition: border-color 0.15s ease;
+  }
+  .qq-opt:hover{ border-color: var(--ink); }
+  .qq-opt:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  .qq-opt.right{ border-color: var(--teal); background: var(--teal-bg); color: #0B4F4A; font-weight: 600; }
+  .qq-opt.right::after{ content:"  ✓"; }
+  .qq-opt.miss{ border-color: var(--rose); background: var(--rose-bg); color: #8C1030; opacity: 0.75; animation: shake 0.4s ease; }
+  .qq-opt:disabled{ cursor: default; }
+  .qq-explain{
+    margin-top: 12px; font-size: 12.5px; color: var(--ink-soft);
+    border-top: 1.5px dashed var(--line); padding-top: 10px; display: none;
+  }
+  .qq-block.answered .qq-explain{ display: block; }
+  .qq-try{ font-size: 12px; color: var(--rose); font-weight: 600; margin-top: 8px; display:none; }
+  .qq-block.missed:not(.answered) .qq-try{ display: block; }
+
+  .order-game{
+    border: 1.5px solid var(--line); border-left: 5px solid var(--amber);
+    border-radius: var(--radius); background: var(--paper); padding: 18px; margin-top: 26px;
+  }
+  .order-game .qq-num{ font-family:"IBM Plex Mono", monospace; font-size: 11px; color: var(--amber); font-weight:600; letter-spacing: 0.08em; display:block; margin-bottom: 6px; }
+  .order-game .qq-q{ font-weight: 600; font-size: 14.5px; color: var(--ink); margin-bottom: 12px; }
+  .order-row{ display:flex; flex-wrap: wrap; gap: 10px; }
+  .ord-chip{
+    font-family:"IBM Plex Mono", monospace; font-size: 12.5px; font-weight:600;
+    border: 2px solid var(--ink); border-radius: var(--radius); background: var(--paper);
+    color: var(--ink); padding: 10px 16px; cursor: pointer; position: relative;
+    transition: transform 0.12s ease;
+  }
+  .ord-chip:hover{ transform: translateY(-1px); }
+  .ord-chip:focus-visible{ outline: 3px solid var(--amber); outline-offset: 2px; }
+  .ord-chip.done{ border-color: var(--teal); background: var(--teal-bg); color: #0B4F4A; cursor: default; }
+  .ord-chip.done .ord-badge{ display: inline-flex; }
+  .ord-chip.wrong{ animation: shake 0.4s ease; border-color: var(--rose); background: var(--rose-bg); color:#8C1030; }
+  .ord-badge{
+    display: none; position: absolute; top: -10px; left: -10px;
+    width: 22px; height: 22px; border-radius: 50%; background: var(--teal); color: #fff;
+    font-size: 11px; align-items: center; justify-content: center; font-weight: 600;
+  }
+  .order-feedback{ margin-top: 12px; font-size: 13px; font-weight: 600; }
+  .order-feedback.ok{ color: var(--teal); }
+  .order-feedback.err{ color: var(--rose); }
+
+  /* ============ REFERENCES / FOOTER ============ */
+  .refs{ display:grid; gap: 10px; margin-top: 10px; }
+  .ref{ border: 1.5px solid var(--line); border-left: 5px solid var(--ink); border-radius: var(--radius); background: var(--paper); padding: 12px 15px; font-size: 13.5px; }
+  .ref .cite{ color: var(--ink-soft); }
+  .ref a{ font-weight: 600; }
+  footer{ background: var(--dark); color: var(--dark-faint); padding: 34px 0; font-size: 12.5px; }
+</style>
+</head>
+<body>
+
+<div id="progress-track"><div id="progress-fill"></div></div>
+<div id="coverage-pill" class="mono"><span class="dot"></span><span id="coverage-text">Explored 0/0</span></div>
+<div id="badge-toast"><strong>Field notebook complete.</strong>You've uncovered every entry in this module — nice work.</div>
+
+<!-- ============ HERO ============ -->
+<section id="hero">
+  <div class="wrap reveal in">
+    <div class="eyebrow">Module 01 · Intro to Visuals in AI</div>
+    <h1>Somebody tagged this, before any model saw it.</h1>
+    <p class="lede">Every photo a vision model learns from picked up a label somewhere along the way — alt-text typed by a stranger for accessibility, a bounding box drawn by a paid annotator, a caption written by another AI. This module opens the field notes on how that annotation actually happens, and follows one batch of images from a public webpage all the way to a deployed, fine-tuned model.</p>
+
+    <ul class="obj-list">
+      <li><span class="n mono">01</span> Trace visual annotation from hand-labeled digits to today's AI-written captions</li>
+      <li><span class="n mono">02</span> Follow an image's full journey from a scraped webpage to a deployed model</li>
+      <li><span class="n mono">03</span> Pick up the shared vocabulary used across data, pretraining, and alignment teams</li>
+    </ul>
+
+    <div class="hint">
+      <span class="k">HOW THIS MODULE WORKS —</span> Scroll to uncover each section. <strong>Flip</strong> a vocabulary card or a timeline card to read it, <strong>drag the photo down the pipeline</strong> to unlock each stage of the data lifecycle, then finish with the checkpoint activities at the end.
+    </div>
+  </div>
+</section>
+
+<!-- ============ GLOSSARY ============ -->
+<section id="glossary">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Field notes</div>
+      <h2>Vocabulary before you start</h2>
+      <p>Every term below appears somewhere in this module. Data teams, pretraining researchers, and alignment researchers each carry their own shorthand — flip a card to read its definition, and try to collect them all.</p>
+    </div>
+
+    <div class="legend reveal">
+      <span><span class="sw" style="background:var(--amber)"></span>Data &amp; annotation</span>
+      <span><span class="sw" style="background:var(--teal)"></span>Model &amp; architecture</span>
+      <span><span class="sw" style="background:var(--violet)"></span>Training &amp; alignment</span>
+      <span><span class="sw" style="background:var(--rose)"></span>Safety &amp; filtering</span>
+    </div>
+
+    <div class="glossary-grid reveal" id="glossary-grid">
+      <!-- term cards injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ HISTORY TIMELINE ============ -->
+<section id="history">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Field log</div>
+      <h2>A brief history of visual annotation</h2>
+      <p>Flip any card to read the entry — the dot on the spine fills in once you have. The colors track whether each moment was mainly about data, model architecture, or training.</p>
+    </div>
+
+    <div class="timeline reveal" id="timeline">
+      <!-- event cards injected by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ LIFECYCLE (drag pipeline) ============ -->
+<section id="lifecycle">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">The loop</div>
+      <h2>Lifecycle of visual data: scraping to feedback</h2>
+      <p><strong>Drag the small photo down the winding path</strong> (or use the button below) to carry one image through the full pipeline. Each stage unlocks as the photo reaches it — open an unlocked stage for the details.</p>
+    </div>
+
+    <div class="pipeline reveal" id="pipeline">
+      <div class="path-col" id="path-col">
+        <svg id="pipe-svg" aria-hidden="true">
+          <path id="pipe-track" class="track" d=""/>
+          <path id="pipe-trail" class="trail" d=""/>
+          <g id="pipe-anchors"></g>
+        </svg>
+        <div id="photo-chip" class="pulse" role="slider" aria-label="Photo position in the pipeline. Drag down to advance." aria-valuemin="0" aria-valuemax="8" aria-valuenow="0" tabindex="0">
+          <div class="thumb"></div>
+        </div>
+      </div>
+
+      <div class="stage-col" id="stage-col">
+
+        <div class="stage locked" data-cat="data">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">01</span>Scraping</span><span class="tag">DATA</span></summary>
+              <div class="body">Billions of images and their surrounding text — including alt-text — get pulled from the open web, usually via Common Crawl, producing raw image-text pairs. Nothing here has been checked for quality, accuracy, or safety yet.
+                <span class="src">Source: <a href="https://arxiv.org/abs/2210.08402" target="_blank" rel="noopener">Schuhmann et al., LAION-5B</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="data">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">02</span>Filtering</span><span class="tag">DATA / SAFETY</span></summary>
+              <div class="body">Deduplication strips near-identical copies; low-resolution images are dropped; pairs where the image and text don't really match are scored out — often using CLIP itself as the judge. NSFW classifiers and other safety filters flag unsafe content for removal.
+                <span class="src">Source: <a href="https://arxiv.org/abs/2210.08402" target="_blank" rel="noopener">Schuhmann et al., LAION-5B (filtering pipeline)</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="data">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">03</span>Labeling &amp; annotation</span><span class="tag">DATA</span></summary>
+              <div class="body">What survives filtering gets annotated: some images by paid human annotators drawing bounding boxes or segmentation masks — with ground-truth checks to keep quality up — and, increasingly, a large share captioned by an existing capable AI model, since raw alt-text is short, inconsistent, or simply wrong.
+                <span class="src">Sources: <a href="https://devopedia.org/imagenet" target="_blank" rel="noopener">devopedia.org, ImageNet annotation process</a> · <a href="https://arxiv.org/abs/2406.10328" target="_blank" rel="noopener">"From Pixels to Prose"</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="model">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">04</span>Pre-training</span><span class="tag">MODEL</span></summary>
+              <div class="body">An image encoder — often a Vision Transformer — and a text encoder are trained together with a contrastive learning objective, or the image encoder is plugged into a large language model, so pictures and words share one embedding space.
+                <span class="src">Sources: <a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al., CLIP</a> · <a href="https://arxiv.org/abs/2010.11929" target="_blank" rel="noopener">Dosovitskiy et al., ViT</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="train">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">05</span>Supervised fine-tuning</span><span class="tag">TRAINING</span></summary>
+              <div class="body">The pretrained model goes through fine-tuning on carefully written instruction-and-response examples so it learns to actually answer questions about images helpfully — not just associate pictures with text in the abstract.</div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="train">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">06</span>Preference-based post-training</span><span class="tag">TRAINING</span></summary>
+              <div class="body">People — or increasingly another AI model — compare pairs of the model's answers and say which is better. That preference data trains a separate reward model that learns to predict what a rater would prefer.
+                <span class="src">Source: <a href="https://arxiv.org/abs/1706.03741" target="_blank" rel="noopener">Christiano et al., "Deep Reinforcement Learning from Human Preferences"</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="train">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">07</span>RLHF / RLAIF</span><span class="tag">TRAINING</span></summary>
+              <div class="body">The model is optimized against the reward model, nudging it toward the kinds of responses raters preferred — that's RLHF. RLAIF swaps in AI-generated preference judgments to run this step at far greater scale than human review alone allows.
+                <span class="src">Source: <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">Ouyang et al., InstructGPT</a></span>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="stage locked" data-cat="loop">
+          <span class="lock-tag">🔒 MOVE THE PHOTO HERE</span>
+          <div class="stage-inner">
+            <details class="stage-card">
+              <summary><span class="ttl"><span class="snum">08</span>Deployment &amp; real-world feedback</span><span class="tag">LOOP</span></summary>
+              <div class="body">People actually use the model. Thumbs up/down, corrections, and reported failures get collected and, after review, some of that becomes new training or annotation data — which flows back into filtering and labeling for the next round.</div>
+            </details>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="pipe-controls reveal">
+      <button id="advance-btn">Move the photo to the next stage →</button>
+      <span id="pipe-status" aria-live="polite">Stage 0 of 8 unlocked</span>
+    </div>
+
+    <div class="loopback reveal" id="loopback" hidden>
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path class="dash" d="M22 6 C22 16, 14 22, 4 22" stroke="#BE123C" stroke-width="2.5"/>
+        <path d="M4 22 L9 22 M4 22 L4 17" stroke="#BE123C" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span><strong>The flywheel:</strong> real usage generates the annotation needs — and the filtering questions — that reshape stages 02 and 03 for the next training run. Visual AI pipelines rarely run once; they cycle.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KNOWLEDGE CHECK ============ -->
+<section id="kcheck">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Checkpoint 1 of 3</div>
+      <h2>Sort the vocabulary into the pipeline</h2>
+      <p>Every term below belongs to one phase of the lifecycle you just walked through. <strong>Tap a term, then tap the phase where it belongs</strong> (tap a placed term to send it back). Check your answers as many times as you need — wrong guesses bounce back to the tray.</p>
+    </div>
+
+    <div class="kc-tray reveal" id="kc-tray">
+      <span class="kc-tray-label">TERM TRAY — 10 TO PLACE</span>
+      <button class="kc-chip" data-phase="A">Alt-text</button>
+      <button class="kc-chip" data-phase="A">Deduplication</button>
+      <button class="kc-chip" data-phase="A">NSFW classifier</button>
+      <button class="kc-chip" data-phase="B">Bounding box</button>
+      <button class="kc-chip" data-phase="B">Crowdsourcing</button>
+      <button class="kc-chip" data-phase="B">Synthetic captioning</button>
+      <button class="kc-chip" data-phase="C">Contrastive learning</button>
+      <button class="kc-chip" data-phase="C">Vision Transformer</button>
+      <button class="kc-chip" data-phase="D">Preference data</button>
+      <button class="kc-chip" data-phase="D">RLHF</button>
+    </div>
+
+    <div class="kc-bins reveal">
+      <div class="kc-bin" data-phase="A" tabindex="0" role="button" aria-label="Phase: Scrape and filter">
+        <h3>SCRAPE &amp; FILTER</h3>
+        <div class="kc-sub">stages 01–02</div>
+        <div class="kc-drop"></div>
+      </div>
+      <div class="kc-bin" data-phase="B" tabindex="0" role="button" aria-label="Phase: Label and annotate">
+        <h3>LABEL &amp; ANNOTATE</h3>
+        <div class="kc-sub">stage 03</div>
+        <div class="kc-drop"></div>
+      </div>
+      <div class="kc-bin" data-phase="C" tabindex="0" role="button" aria-label="Phase: Pre-train">
+        <h3>PRE-TRAIN</h3>
+        <div class="kc-sub">stage 04</div>
+        <div class="kc-drop"></div>
+      </div>
+      <div class="kc-bin" data-phase="D" tabindex="0" role="button" aria-label="Phase: Post-train and feedback">
+        <h3>POST-TRAIN &amp; FEEDBACK</h3>
+        <div class="kc-sub">stages 05–08</div>
+        <div class="kc-drop"></div>
+      </div>
+    </div>
+
+    <div class="kc-controls reveal">
+      <button id="kc-check" class="kc-btn primary" disabled>Check answers</button>
+      <button id="kc-reset" class="kc-btn ghost">Reset</button>
+      <span id="kc-feedback" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUICK QUESTIONS ============ -->
+<section id="quickq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Checkpoint 2 of 3</div>
+      <h2>Three quick questions</h2>
+      <p>No pressure — wrong picks stay marked so you can try another. Each question unlocks a short explanation once you've got it.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="qq-block" data-answer="0">
+        <span class="qq-num">QUESTION 1 / 3</span>
+        <div class="qq-q">Which came first in the history of visual annotation?</div>
+        <div class="qq-opts">
+          <button class="qq-opt">Crowdsourced labeling at ImageNet scale</button>
+          <button class="qq-opt">Contrastive pretraining on web alt-text (CLIP)</button>
+          <button class="qq-opt">AI models writing synthetic captions</button>
+        </div>
+        <div class="qq-try">Not quite — check the timeline dates and try another.</div>
+        <div class="qq-explain">✓ ImageNet moved to crowdsourced labeling on Mechanical Turk in 2008 — CLIP's web-alt-text approach came in 2021, and synthetic captioning took off after that.</div>
+      </div>
+
+      <div class="qq-block" data-answer="1">
+        <span class="qq-num">QUESTION 2 / 3</span>
+        <div class="qq-q">In RLAIF, who provides the preference judgments used to train the reward model?</div>
+        <div class="qq-opts">
+          <button class="qq-opt">Human annotators</button>
+          <button class="qq-opt">Another AI model</button>
+          <button class="qq-opt">The end users of the product</button>
+        </div>
+        <div class="qq-try">Not quite — the "AI" in RLAIF is the clue.</div>
+        <div class="qq-explain">✓ RLAIF swaps human raters for an AI model that supplies the preference judgments — trading some human oversight for much greater scale.</div>
+      </div>
+
+      <div class="qq-block" data-answer="0">
+        <span class="qq-num">QUESTION 3 / 3</span>
+        <div class="qq-q">Why do modern pipelines increasingly generate synthetic captions instead of using scraped alt-text directly?</div>
+        <div class="qq-opts">
+          <button class="qq-opt">Alt-text is often short, inconsistent, or inaccurate</button>
+          <button class="qq-opt">Most images on the web have no alt-text at all</button>
+          <button class="qq-opt">Alt-text can't be read by training software</button>
+        </div>
+        <div class="qq-try">Not quite — think about the <em>quality</em> of alt-text, not its availability.</div>
+        <div class="qq-explain">✓ Alt-text exists and is machine-readable — the problem is quality. It's written for accessibility, not training, so it's frequently too short or just wrong. A capable model can write denser, more accurate captions.</div>
+      </div>
+    </div>
+
+    <!-- ============ ORDER GAME ============ -->
+    <div class="order-game reveal" id="order-game">
+      <span class="qq-num">CHECKPOINT 3 OF 3</span>
+      <div class="qq-q">One last one: tap these four steps in the order an image travels through the pipeline.</div>
+      <div class="order-row">
+        <button class="ord-chip" data-order="2"><span class="ord-badge"></span>Pre-training</button>
+        <button class="ord-chip" data-order="0"><span class="ord-badge"></span>Scraping</button>
+        <button class="ord-chip" data-order="3"><span class="ord-badge"></span>RLHF</button>
+        <button class="ord-chip" data-order="1"><span class="ord-badge"></span>Filtering</button>
+      </div>
+      <div class="order-feedback" id="order-feedback" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ REFERENCES ============ -->
+<section id="refs">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Further reading</div>
+      <h2>Sources cited in this module</h2>
+      <p>Primary papers and background reading behind the timeline and lifecycle above, in case you want to go deeper.</p>
+    </div>
+    <div class="refs reveal">
+      <div class="ref"><a href="https://archive.ics.uci.edu/dataset/683/mnist+database+of+handwritten+digits" target="_blank" rel="noopener">LeCun, Bottou, Bengio &amp; Haffner (1998) — "Gradient-Based Learning Applied to Document Recognition"</a><div class="cite">Proceedings of the IEEE — dataset page hosted by the UCI Machine Learning Repository, with provenance and citation details for MNIST.</div></div>
+      <div class="ref"><a href="https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf" target="_blank" rel="noopener">Deng et al. (2009) — "ImageNet: A Large-Scale Hierarchical Image Database"</a><div class="cite">CVPR 2009 — the original ImageNet paper (PDF hosted by the ImageNet project).</div></div>
+      <div class="ref"><a href="https://www.pinecone.io/learn/series/image-search/imagenet/" target="_blank" rel="noopener">Pinecone — "AlexNet and ImageNet: The Birth of Deep Learning"</a><div class="cite">Accessible history of ImageNet's construction and the 2012 ILSVRC result.</div></div>
+      <div class="ref"><a href="https://www.historyofdatascience.com/imagenet-a-pioneering-vision-for-computers/" target="_blank" rel="noopener">History of Data Science — "ImageNet: A Pioneering Vision for Computers"</a><div class="cite">Background on the launch of the ILSVRC benchmark.</div></div>
+      <div class="ref"><a href="https://devopedia.org/imagenet" target="_blank" rel="noopener">devopedia.org — "ImageNet"</a><div class="cite">Detail on the Mechanical Turk annotation process, including quality-control measures.</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/1405.0312" target="_blank" rel="noopener">Lin et al. (2014) — "Microsoft COCO: Common Objects in Context"</a><div class="cite">arXiv:1405.0312</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Vaswani et al. (2017) — "Attention Is All You Need"</a><div class="cite">arXiv:1706.03762</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/2010.11929" target="_blank" rel="noopener">Dosovitskiy et al. (2020) — "An Image Is Worth 16x16 Words" (ViT)</a><div class="cite">arXiv:2010.11929</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/2103.00020" target="_blank" rel="noopener">Radford et al. (2021) — "Learning Transferable Visual Models From Natural Language Supervision" (CLIP)</a><div class="cite">arXiv:2103.00020 · see also <a href="https://openai.com/index/clip/" target="_blank" rel="noopener">openai.com/index/clip</a></div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/2210.08402" target="_blank" rel="noopener">Schuhmann et al. (2022) — "LAION-5B"</a><div class="cite">arXiv:2210.08402</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/1706.03741" target="_blank" rel="noopener">Christiano et al. (2017) — "Deep Reinforcement Learning from Human Preferences"</a><div class="cite">arXiv:1706.03741 — the foundational RLHF paper.</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noopener">Ouyang et al. (2022) — "Training Language Models to Follow Instructions with Human Feedback" (InstructGPT)</a><div class="cite">arXiv:2203.02155</div></div>
+      <div class="ref"><a href="https://arxiv.org/abs/2406.10328" target="_blank" rel="noopener">"From Pixels to Prose: A Large Dataset of Dense Image Captions"</a><div class="cite">arXiv:2406.10328 — on synthetic captioning at scale.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">Module 01 · Intro to Visuals in AI — draft build for course review. Next up: Pre-training.</div>
+</footer>
+
+<script>
+(function(){
+  // ================= CONTENT DATA =================
+  const TERMS = [
+    { name: "Alt-text", cat: "data", catLabel: "DATA & ANNOTATION", def: "Short text description embedded in an image's HTML, originally meant for screen readers. It doubles as a free, if noisy, caption when researchers scrape the web for training data." },
+    { name: "Annotation", cat: "data", catLabel: "DATA & ANNOTATION", def: "Any label, tag, box, mask, or caption added to raw data so a model has something concrete to learn from." },
+    { name: "Bounding box", cat: "data", catLabel: "DATA & ANNOTATION", def: "A rectangle drawn around an object to mark its location in an image — the oldest and still most common form of visual annotation." },
+    { name: "Contrastive learning", cat: "model", catLabel: "MODEL & ARCHITECTURE", def: "A training method that pulls a matching image-caption pair together in representation space while pushing mismatched pairs apart." },
+    { name: "Crowdsourcing", cat: "data", catLabel: "DATA & ANNOTATION", def: "Splitting a huge labeling job into small tasks distributed to many people online — historically via platforms like Amazon Mechanical Turk." },
+    { name: "Deduplication", cat: "data", catLabel: "DATA & ANNOTATION", def: "Removing near-identical images from a dataset so a model doesn't waste capacity memorizing repeats." },
+    { name: "Embedding", cat: "model", catLabel: "MODEL & ARCHITECTURE", def: "A list of numbers representing an image or piece of text as a point in space, positioned so similar things land near each other." },
+    { name: "Fine-tuning", cat: "train", catLabel: "TRAINING & ALIGNMENT", def: "Continuing to train an already-pretrained model on a smaller, more specific dataset to shape its behavior." },
+    { name: "Ground truth", cat: "data", catLabel: "DATA & ANNOTATION", def: "The label considered correct for a given piece of data — the standard a model's predictions, or an annotator's answers, are checked against." },
+    { name: "NSFW classifier", cat: "safety", catLabel: "SAFETY & FILTERING", def: "An automated filter that flags sexual, violent, or otherwise unsafe content so it can be removed before training." },
+    { name: "Preference data", cat: "train", catLabel: "TRAINING & ALIGNMENT", def: "Pairs of model outputs ranked as \"better\" or \"worse\" by a rater — human or AI — used to train a reward model." },
+    { name: "RLAIF", cat: "train", catLabel: "TRAINING & ALIGNMENT", def: "Reinforcement Learning from AI Feedback — the same idea as RLHF, but a model supplies the preference judgments instead of a person, at far greater scale." },
+    { name: "RLHF", cat: "train", catLabel: "TRAINING & ALIGNMENT", def: "Reinforcement Learning from Human Feedback — ranked human preferences train a reward model, then the model is optimized against that reward." },
+    { name: "Segmentation mask", cat: "data", catLabel: "DATA & ANNOTATION", def: "A pixel-by-pixel outline of an object's exact shape — more precise, and more expensive to produce, than a bounding box." },
+    { name: "Synthetic captioning", cat: "data", catLabel: "DATA & ANNOTATION", def: "Using an existing capable model to write new, denser captions for images, rather than relying on short, inconsistent scraped alt-text." },
+    { name: "Vision Transformer (ViT)", cat: "model", catLabel: "MODEL & ARCHITECTURE", def: "An architecture that cuts an image into small patches and processes them the way a language transformer processes words in a sentence." }
+  ];
+
+  const EVENTS = [
+    { yr: "1998", cat: "data", ttl: "Digit forms become data",
+      body: "MNIST assembles 70,000 handwritten digit images — originally collected by NIST from forms filled out by U.S. Census Bureau employees and high-school students — into one of the first widely used labeled image datasets for benchmarking classifiers.",
+      srcLabel: "LeCun et al. (1998), via the UCI Machine Learning Repository", srcUrl: "https://archive.ics.uci.edu/dataset/683/mnist+database+of+handwritten+digits" },
+    { yr: "2006–09", cat: "data", ttl: "A dataset modeled on a dictionary",
+      body: "Fei-Fei Li's team sets out to build a dataset that mirrors WordNet's tree of nouns — aiming for tens of thousands of categories rather than the dozens used before.",
+      srcLabel: "Deng et al., \"ImageNet: A Large-Scale Hierarchical Image Database,\" CVPR 2009", srcUrl: "https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf" },
+    { yr: "2008", cat: "data", ttl: "The math doesn't work, so crowdsourcing does",
+      body: "At roughly one label per minute, a small team would need about 19 years to tag the images already collected. ImageNet turns to crowdsourcing on Amazon Mechanical Turk — with gold-standard images of known ground truth mixed in to catch careless annotators.",
+      srcLabel: "devopedia.org, \"ImageNet\"", srcUrl: "https://devopedia.org/imagenet" },
+    { yr: "2010", cat: "data", ttl: "A shared benchmark",
+      body: "The ImageNet Large Scale Visual Recognition Challenge (ILSVRC) begins, giving every lab in the field the same annotated images to test against, year after year.",
+      srcLabel: "History of Data Science, \"ImageNet\"", srcUrl: "https://www.historyofdatascience.com/imagenet-a-pioneering-vision-for-computers/" },
+    { yr: "2012", cat: "model", ttl: "Labeled data proves decisive",
+      body: "A deep neural network trained on ImageNet — later known as AlexNet — wins ILSVRC by a wide margin, convincing much of the field that large labeled datasets plus deep learning beat hand-engineered features.",
+      srcLabel: "Pinecone, \"AlexNet and ImageNet\"", srcUrl: "https://www.pinecone.io/learn/series/image-search/imagenet/" },
+    { yr: "2014", cat: "data", ttl: "Annotation gets harder and more expensive",
+      body: "Microsoft COCO asks crowd workers to draw per-instance segmentation masks — a precise outline, not just a bounding box — around every object in cluttered scenes, plus write captions. Annotation shifts from \"what is this\" toward \"exactly where, and how many.\"",
+      srcLabel: "Lin et al., \"Microsoft COCO\"", srcUrl: "https://arxiv.org/abs/1405.0312" },
+    { yr: "2017", cat: "model", ttl: "The architecture arrives",
+      body: "\"Attention Is All You Need\" introduces the Transformer for language. It isn't built with images in mind — but three years later it will define how most vision-language models work.",
+      srcLabel: "Vaswani et al., \"Attention Is All You Need\"", srcUrl: "https://arxiv.org/abs/1706.03762" },
+    { yr: "2020", cat: "model", ttl: "Pictures become patches",
+      body: "The Vision Transformer (ViT) slices an image into a grid of patches and feeds them through a Transformer as though they were words in a sentence — borrowing the language architecture almost wholesale.",
+      srcLabel: "Dosovitskiy et al., \"An Image Is Worth 16x16 Words\"", srcUrl: "https://arxiv.org/abs/2010.11929" },
+    { yr: "2021", cat: "model", ttl: "Web alt-text replaces category labels",
+      body: "OpenAI's CLIP trains on 400 million image-caption pairs pulled from the web using contrastive learning instead of hand-assigned categories — proof that free, noisy alt-text can substitute for expensive manual labeling at large enough scale.",
+      srcLabel: "Radford et al., CLIP", srcUrl: "https://arxiv.org/abs/2103.00020" },
+    { yr: "2021–22", cat: "data", ttl: "Open datasets at billions-of-pairs scale",
+      body: "LAION releases LAION-400M, then LAION-5B: open, web-scraped, CLIP-filtered image-text datasets that go on to train early open text-to-image models.",
+      srcLabel: "Schuhmann et al., \"LAION-5B\"", srcUrl: "https://arxiv.org/abs/2210.08402" },
+    { yr: "2022", cat: "train", ttl: "Ranked preferences enter the pipeline",
+      body: "InstructGPT shows that having humans rank pairs of model outputs — preference data — then training a reward model on those rankings reliably makes a model more useful. The recipe is carried into vision-language models soon after.",
+      srcLabel: "Ouyang et al., InstructGPT", srcUrl: "https://arxiv.org/abs/2203.02155" },
+    { yr: "2023–now", cat: "data", ttl: "AI starts writing the captions",
+      body: "Raw alt-text is short and often wrong, so pretraining pipelines increasingly rely on synthetic captioning: an existing capable vision-language model generates longer, denser, more accurate captions for the next model's training data.",
+      srcLabel: "\"From Pixels to Prose\"", srcUrl: "https://arxiv.org/abs/2406.10328" }
+  ];
+
+  // ================= BUILD FLIP CARDS =================
+  const glossaryGrid = document.getElementById('glossary-grid');
+  TERMS.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'flip-card term-card';
+    card.dataset.cat = t.cat;
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-expanded', 'false');
+    card.innerHTML =
+      '<div class="flip-inner">' +
+        '<div class="face front">' +
+          '<span class="cat-label mono">' + t.catLabel + '</span>' +
+          '<span class="seen-check">✓</span>' +
+          '<span class="term-name">' + t.name + '</span>' +
+          '<span class="flip-hint">TAP TO FLIP ⟳</span>' +
+        '</div>' +
+        '<div class="face back">' +
+          '<span class="cat-label mono">' + t.name.toUpperCase() + '</span>' +
+          '<div class="def">' + t.def + '</div>' +
+        '</div>' +
+      '</div>';
+    glossaryGrid.appendChild(card);
+  });
+
+  const timelineEl = document.getElementById('timeline');
+  EVENTS.forEach(ev => {
+    const item = document.createElement('div');
+    item.className = 't-item';
+    item.dataset.cat = ev.cat;
+    item.innerHTML =
+      '<span class="dot"></span>' +
+      '<div class="flip-card flip-x event-card" data-cat="' + ev.cat + '" tabindex="0" role="button" aria-expanded="false">' +
+        '<div class="flip-inner">' +
+          '<div class="face front">' +
+            '<span class="seen-check">✓</span>' +
+            '<span class="yr mono">' + ev.yr + '</span>' +
+            '<span class="ttl">' + ev.ttl + '</span>' +
+            '<span class="flip-hint">TAP TO FLIP ⟳</span>' +
+          '</div>' +
+          '<div class="face back">' +
+            '<div class="body">' + ev.body +
+              '<span class="src">Source: <a href="' + ev.srcUrl + '" target="_blank" rel="noopener">' + ev.srcLabel + '</a></span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    timelineEl.appendChild(item);
+  });
+
+  // ================= PROGRESS BAR =================
+  const fill = document.getElementById('progress-fill');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrollTop = h.scrollTop || document.body.scrollTop;
+    const max = h.scrollHeight - h.clientHeight;
+    fill.style.width = (max > 0 ? (scrollTop / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  // ================= SCROLL REVEAL =================
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ================= COVERAGE =================
+  const flipCards = Array.from(document.querySelectorAll('.flip-card'));
+  const stages = Array.from(document.querySelectorAll('#stage-col .stage'));
+  const qqBlocks = Array.from(document.querySelectorAll('.qq-block'));
+  // flip cards + pipeline stages + sort activity + quick questions + order game
+  const TOTAL = flipCards.length + stages.length + 1 + qqBlocks.length + 1;
+  let seen = 0;
+  const coverageText = document.getElementById('coverage-text');
+  const coveragePill = document.getElementById('coverage-pill');
+  const toast = document.getElementById('badge-toast');
+  function renderCoverage(){
+    coverageText.textContent = 'Explored ' + seen + '/' + TOTAL;
+    if (seen >= TOTAL){
+      coveragePill.classList.add('full');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4500);
+    }
+  }
+  function bump(){ seen++; renderCoverage(); }
+  renderCoverage();
+
+  // ================= FLIP BEHAVIOR =================
+  flipCards.forEach(card => {
+    function flip(){
+      const flipped = card.classList.toggle('flipped');
+      card.setAttribute('aria-expanded', flipped ? 'true' : 'false');
+      if (flipped && card.dataset.seen !== '1'){
+        card.dataset.seen = '1';
+        const tItem = card.closest('.t-item');
+        if (tItem) tItem.setAttribute('data-seen','1');
+        bump();
+      }
+    }
+    card.addEventListener('click', flip);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
+    });
+    // don't flip back when following a source link
+    card.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+  });
+
+  // ================= PIPELINE =================
+  const pathCol = document.getElementById('path-col');
+  const svg = document.getElementById('pipe-svg');
+  const track = document.getElementById('pipe-track');
+  const trail = document.getElementById('pipe-trail');
+  const anchorsG = document.getElementById('pipe-anchors');
+  const chip = document.getElementById('photo-chip');
+  const advanceBtn = document.getElementById('advance-btn');
+  const pipeStatus = document.getElementById('pipe-status');
+  const loopback = document.getElementById('loopback');
+
+  let pathLen = 0, samples = [], anchors = [], anchorFracs = [], unlockedCount = 0, curT = 0;
+  const N_SAMPLES = 240;
+
+  function buildPath(){
+    const colW = pathCol.clientWidth;
+    const H = document.getElementById('stage-col').offsetHeight;
+    svg.setAttribute('viewBox', '0 0 ' + colW + ' ' + H);
+    svg.style.height = H + 'px';
+    pathCol.style.height = H + 'px';
+
+    // anchor each stage near the top of its card (stable even when details expand)
+    anchors = stages.map(s => s.offsetTop + 26);
+    const cx = colW / 2;
+    const amp = Math.max(14, colW * 0.30);
+    let d = 'M ' + cx + ' 4';
+    let prevY = 4, prevX = cx;
+    anchors.forEach((y, i) => {
+      const x = cx + (i % 2 === 0 ? -amp : amp);
+      const midY = (prevY + y) / 2;
+      d += ' C ' + prevX + ' ' + midY + ', ' + x + ' ' + midY + ', ' + x + ' ' + y;
+      prevY = y; prevX = x;
+    });
+    track.setAttribute('d', d);
+    trail.setAttribute('d', d);
+    pathLen = track.getTotalLength();
+    trail.style.strokeDasharray = pathLen;
+
+    // sample the path for y -> length lookup
+    samples = [];
+    for (let i = 0; i <= N_SAMPLES; i++){
+      const L = (i / N_SAMPLES) * pathLen;
+      const p = track.getPointAtLength(L);
+      samples.push({ L: L, x: p.x, y: p.y });
+    }
+    anchorFracs = anchors.map(y => {
+      let best = samples[0];
+      for (const s of samples){ if (Math.abs(s.y - y) < Math.abs(best.y - y)) best = s; }
+      return best.L / pathLen;
+    });
+
+    // anchor dots
+    anchorsG.innerHTML = '';
+    anchors.forEach((y, i) => {
+      const s = samples.reduce((a, b) => Math.abs(b.y - y) < Math.abs(a.y - y) ? b : a);
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('cx', s.x); c.setAttribute('cy', s.y); c.setAttribute('r', 6);
+      c.setAttribute('class', 'anchor-dot' + (i < unlockedCount ? ' lit' : ''));
+      c.dataset.i = i;
+      anchorsG.appendChild(c);
+    });
+
+    // keep the chip consistent with progress: snap to the last unlocked anchor
+    if (unlockedCount > 0){
+      curT = anchorFracs[unlockedCount - 1];
+    } else if (curT !== 0){
+      curT = Math.min(curT, anchorFracs[0] - 0.02);
+    }
+    setChip(curT, false);
+  }
+
+  function setChip(t, animate){
+    curT = Math.max(0, Math.min(1, t));
+    const p = track.getPointAtLength(curT * pathLen);
+    chip.style.transition = animate ? 'transform 0.45s ease' : 'none';
+    chip.style.transform = 'translate(' + (p.x - 17) + 'px, ' + (p.y - 17) + 'px)';
+    trail.style.strokeDashoffset = pathLen * (1 - curT);
+    checkUnlocks();
+  }
+
+  function checkUnlocks(){
+    for (let i = unlockedCount; i < anchorFracs.length; i++){
+      if (curT >= anchorFracs[i] - 0.012){
+        const st = stages[i];
+        st.classList.remove('locked');
+        st.classList.add('just-unlocked');
+        setTimeout(() => st.classList.remove('just-unlocked'), 500);
+        const dot = anchorsG.querySelector('[data-i="' + i + '"]');
+        if (dot) dot.classList.add('lit');
+        unlockedCount = i + 1;
+        chip.classList.remove('pulse');
+        bump();
+      } else break;
+    }
+    chip.setAttribute('aria-valuenow', unlockedCount);
+    pipeStatus.textContent = 'Stage ' + unlockedCount + ' of ' + stages.length + ' unlocked';
+    if (unlockedCount >= stages.length){
+      loopback.hidden = false;
+      advanceBtn.textContent = 'Pipeline complete ✓';
+      advanceBtn.disabled = true;
+    }
+  }
+
+  // drag handling
+  let dragging = false;
+  chip.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    chip.setPointerCapture(e.pointerId);
+    chip.classList.remove('pulse');
+    e.preventDefault();
+  });
+  chip.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    const rect = pathCol.getBoundingClientRect();
+    const y = e.clientY - rect.top;
+    let best = samples[0];
+    for (const s of samples){ if (Math.abs(s.y - y) < Math.abs(best.y - y)) best = s; }
+    setChip(best.L / pathLen, false);
+  });
+  function endDrag(){ dragging = false; }
+  chip.addEventListener('pointerup', endDrag);
+  chip.addEventListener('pointercancel', endDrag);
+  chip.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight'){ e.preventDefault(); advance(); }
+  });
+
+  function advance(){
+    if (unlockedCount >= stages.length) return;
+    setChip(anchorFracs[unlockedCount] + 0.001, true);
+  }
+  advanceBtn.addEventListener('click', advance);
+
+  // rebuild whenever the stage column changes size (window resize OR a stage card expanding)
+  let roScheduled = false;
+  const ro = new ResizeObserver(() => {
+    if (roScheduled) return;
+    roScheduled = true;
+    requestAnimationFrame(() => { roScheduled = false; buildPath(); });
+  });
+  ro.observe(document.getElementById('stage-col'));
+  window.addEventListener('resize', buildPath);
+  requestAnimationFrame(() => requestAnimationFrame(buildPath));
+  window.addEventListener('load', buildPath);
+
+  // ================= KNOWLEDGE CHECK: SORT =================
+  const tray = document.getElementById('kc-tray');
+  const chips = Array.from(document.querySelectorAll('.kc-chip'));
+  const bins = Array.from(document.querySelectorAll('.kc-bin'));
+  const checkBtn = document.getElementById('kc-check');
+  const resetBtn = document.getElementById('kc-reset');
+  const feedback = document.getElementById('kc-feedback');
+  let selected = null;
+  let kcDone = false;
+
+  function updateCheckState(){
+    const placed = chips.filter(c => c.closest('.kc-drop')).length;
+    checkBtn.disabled = placed < chips.length || kcDone;
+    if (!kcDone && placed < chips.length){
+      feedback.textContent = '';
+      feedback.className = '';
+    }
+  }
+
+  function select(chipEl){
+    if (chipEl.classList.contains('correct')) return;
+    if (selected === chipEl){ chipEl.classList.remove('selected'); selected = null; return; }
+    if (selected) selected.classList.remove('selected');
+    selected = chipEl;
+    chipEl.classList.add('selected');
+    bins.forEach(b => b.classList.add('receiving'));
+    setTimeout(() => bins.forEach(b => b.classList.remove('receiving')), 900);
+  }
+
+  chips.forEach(c => {
+    c.addEventListener('click', () => {
+      if (c.closest('.kc-drop') && !c.classList.contains('correct') && selected !== c){
+        tray.appendChild(c);
+        c.classList.remove('selected','wrong');
+        if (selected === c) selected = null;
+        updateCheckState();
+        return;
+      }
+      select(c);
+    });
+  });
+
+  bins.forEach(bin => {
+    function place(){
+      if (!selected) return;
+      selected.classList.remove('selected','wrong');
+      bin.querySelector('.kc-drop').appendChild(selected);
+      selected = null;
+      updateCheckState();
+    }
+    bin.addEventListener('click', place);
+    bin.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); place(); } });
+  });
+
+  checkBtn.addEventListener('click', () => {
+    let right = 0, wrongChips = [];
+    chips.forEach(c => {
+      const bin = c.closest('.kc-bin');
+      if (!bin) return;
+      if (bin.dataset.phase === c.dataset.phase){
+        c.classList.add('correct');
+        c.classList.remove('wrong');
+        right++;
+      } else {
+        c.classList.add('wrong');
+        wrongChips.push(c);
+      }
+    });
+    if (right === chips.length){
+      feedback.textContent = 'All 10 correct — you\'ve mapped the whole pipeline. ✓';
+      feedback.className = 'ok';
+      if (!kcDone){ kcDone = true; bump(); }
+      checkBtn.disabled = true;
+    } else {
+      feedback.textContent = right + '/10 correct — the highlighted terms bounced back. Try again!';
+      feedback.className = right >= 7 ? 'partial' : 'err';
+      setTimeout(() => {
+        wrongChips.forEach(c => { c.classList.remove('wrong'); tray.appendChild(c); });
+        updateCheckState();
+      }, 750);
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    chips.forEach(c => { c.classList.remove('correct','wrong','selected'); tray.appendChild(c); });
+    selected = null;
+    if (!kcDone){ feedback.textContent = ''; feedback.className = ''; }
+    updateCheckState();
+  });
+
+  updateCheckState();
+
+  // ================= QUICK QUESTIONS =================
+  qqBlocks.forEach(block => {
+    const answer = parseInt(block.dataset.answer, 10);
+    const opts = Array.from(block.querySelectorAll('.qq-opt'));
+    let done = false;
+    opts.forEach((opt, i) => {
+      opt.addEventListener('click', () => {
+        if (done) return;
+        if (i === answer){
+          done = true;
+          opt.classList.add('right');
+          opts.forEach(o => o.disabled = true);
+          block.classList.add('answered');
+          block.classList.remove('missed');
+          bump();
+        } else {
+          opt.classList.add('miss');
+          opt.disabled = true;
+          block.classList.add('missed');
+        }
+      });
+    });
+  });
+
+  // ================= ORDER GAME =================
+  const ordChips = Array.from(document.querySelectorAll('.ord-chip'));
+  const ordFeedback = document.getElementById('order-feedback');
+  let nextExpected = 0;
+  let ordDone = false;
+  ordChips.forEach(chipEl => {
+    chipEl.addEventListener('click', () => {
+      if (ordDone || chipEl.classList.contains('done')) return;
+      const idx = parseInt(chipEl.dataset.order, 10);
+      if (idx === nextExpected){
+        chipEl.classList.add('done');
+        chipEl.querySelector('.ord-badge').textContent = nextExpected + 1;
+        nextExpected++;
+        ordFeedback.textContent = '';
+        ordFeedback.className = 'order-feedback';
+        if (nextExpected >= ordChips.length){
+          ordDone = true;
+          ordFeedback.textContent = 'Perfect order — scrape it, filter it, train on it, align it. ✓';
+          ordFeedback.className = 'order-feedback ok';
+          bump();
+        }
+      } else {
+        chipEl.classList.add('wrong');
+        ordFeedback.textContent = 'Not that one yet — what has to happen to an image first?';
+        ordFeedback.className = 'order-feedback err';
+        setTimeout(() => chipEl.classList.remove('wrong'), 450);
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
